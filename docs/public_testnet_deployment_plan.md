@@ -2,11 +2,11 @@
 
 
 This document describes how to enable EVM support for public testnets, such as Jungle testnet, without token economy.
-For local testnet deployments, refer to the [Enable EVM Support For Local Testnet](https://github.com/eosnetworkfoundation/eos-evm/blob/main/docs/local_testnet_deployment_plan.md) guide.
+For local testnet deployments, refer to the [Enable EVM Support For Local Testnet](./local_testnet_deployment_plan.md) guide.
 
 To enable EVM support, the following procedures must be performed by:
 - [Block Producers](#for-block-producers)
-- [EOS EVM team](#for-eos-evm-team)
+- [EVM team](#for-evm-team)
 - [EVM Service Providers](#for-evm-service-providers)
 
 ## For Block Producers
@@ -346,9 +346,9 @@ The following protocol features are required to support EVM in Antelope:
 ]
 ```
 
-## For EOS EVM Team
+## For EVM Team
 
-The EOS EVM Team must perform the following steps:
+The EVM Team must perform the following steps:
 
 ### 1. Create The EVM Account
 
@@ -367,7 +367,7 @@ See the [cleos create key pair](https://docs.eosnetwork.com/leap/latest/cleos/co
 
 ### 2. Deploy EVM Contract
 
-For details on how to compile the EVM smart contract see the [Compilation And Testing Guide](https://github.com/eosnetworkfoundation/eos-evm/blob/main/docs/compilation_and_testing_guide.md).
+For details on how to compile the EVM smart contract see the [Compilation And Testing Guide](./compilation_and_testing_guide.md).
 
 Run the following `cleos` commands to EVM contract to the EVM account:
 
@@ -394,7 +394,7 @@ transfer initial balance
 
 ## For EVM Service Providers
 
-This part is very similar to the [Enable EVM Support For Local Testnet](https://github.com/eosnetworkfoundation/eos-evm/blob/main/docs/local_testnet_deployment_plan.md) guide.
+This part is very similar to the [Enable EVM Support For Local Testnet](./local_testnet_deployment_plan.md) guide.
 EVM service providers will need to provide ETH compatible EVM services as follows:
 
 ### 1. Run an Antelope Node
@@ -406,26 +406,26 @@ Example command:
 ./build/programs/nodeos/nodeos --data-dir=./data-dir  --config-dir=./data-dir --genesis-json=./data-dir/genesis.json --disable-replay-opts
 ```
 
-### 2. Run eos-evm-node
+### 2. Run evm-node
 
-Run at least one eos-evm-node, a.k.a. silkworm node, to sync with the Antelope node.
+Run at least one evm-node, a.k.a. silkworm node, to sync with the Antelope node.
 
-Refer to the *Start up eos-evm-node (silkworm node)* section in the [Enable EVM For Local Testnet](https://github.com/eosnetworkfoundation/eos-evm/blob/main/docs/local_testnet_deployment_plan.md#5-start-up-eos-evm-node-silkworm-node) guide for more details.
-
-```sh
-./build/cmd/eos-evm-node --chain-data ./chain-data  --plugin block_conversion_plugin --plugin blockchain_plugin --nocolor 1 --verbosity=5
-```
-
-### 3. Run eos-evm-rpc
-
-Run at least one eos-evm-rpc, a.k.a. silkworm rpc, process to sync with the eos-evm-node.
-The eos-evm-rpc must be deployed on the same machine with eos-evm-node, as it needs to access the same chain-data folder.
+Refer to the *Start up evm-node (silkworm node)* section in the [Enable EVM For Local Testnet](./local_testnet_deployment_plan.md#5-start-up-evm-node-silkworm-node) guide for more details.
 
 ```sh
-./build/cmd/eos-evm-rpc --eos-evm-node=127.0.0.1:8080 --chaindata=./chain-data 
+./build/cmd/evm-node --chain-data ./chain-data  --plugin block_conversion_plugin --plugin blockchain_plugin --nocolor 1 --verbosity=5
 ```
 
-Refer to the *Start up eos-evm-rpc (silkworm RPC)* section in the [Enable EVM For Local Testnet](https://github.com/eosnetworkfoundation/eos-evm/blob/main/docs/local_testnet_deployment_plan.md#6-start-up-eos-evm-rpc-silkworm-rpc) guide for more RPC setup details.
+### 3. Run evm-rpc
+
+Run at least one evm-rpc, a.k.a. silkworm rpc, process to sync with the evm-node.
+The evm-rpc must be deployed on the same machine with evm-node, as it needs to access the same chain-data folder.
+
+```sh
+./build/cmd/evm-rpc --eos-evm-node=127.0.0.1:8080 --chaindata=./chain-data 
+```
+
+Refer to the *Start up evm-rpc (silkworm RPC)* section in the [Enable EVM For Local Testnet](./local_testnet_deployment_plan.md#6-start-up-evm-rpc-silkworm-rpc) guide for more RPC setup details.
 
 ### 4. Ensure Enough Resources
 
@@ -461,7 +461,7 @@ In the above environment settings, the Transaction Wrapper is set to:
 - Listen to `127.0.0.1:18888`
 - Use the `5JURSKS1BrJ1TagNBw1uVSzTQL2m9eHGkjknWeZkjSt33Awtior` key to wrap and sign the incoming ETH trasnactions into Antelope transactions and push them into the Antelope RPC endpoint `http://127.0.0.1:8888`
 
-Use the `index.js` file from https://github.com/eosnetworkfoundation/eos-evm/tree/main/peripherals/tx_wrapper:
+Use the `index.js` file from ./peripherals/tx_wrapper:
 
 ```sh
 node index.js
@@ -469,9 +469,9 @@ node index.js
 
 ### 6. Run a Proxy Service
 
-Run at least one Proxy service to separate the read service to eos-evm-rpc node and the write service to Transaction Wrapper.
+Run at least one Proxy service to separate the read service to evm-rpc node and the write service to Transaction Wrapper.
 
-Refer to the *Setup proxy to separate read requests and write requests* section in the [Enable EVM For Local Testnet](https://github.com/eosnetworkfoundation/eos-evm/blob/main/docs/local_testnet_deployment_plan.md#7-setup-proxy-to-separate-read-requests-and-write-requests) guide for details.
+Refer to the *Setup proxy to separate read requests and write requests* section in the [Enable EVM For Local Testnet](./local_testnet_deployment_plan.md#7-setup-proxy-to-separate-read-requests-and-write-requests) guide for details.
 
 ## RPC Provider Architecture
 
@@ -487,7 +487,7 @@ Refer to the *Setup proxy to separate read requests and write requests* section 
          |       +-----------+                     v       [3]
          |             |                   +-----------------+
          |             |                   |                 |
-         |             +------------------>|  EOS EVM Node   +
+         |             +------------------>|   EVM Node      +
          |                     READ        |                 |
          |                                 +-----------------+
 ```
@@ -506,7 +506,7 @@ Refer to the *Setup proxy to separate read requests and write requests* section 
 - AMD Ryzen 9 5950X (*or other CPU with good single threaded performance*)
 - 4TB NVMe
 
-### eos-evm-node
+### evm-node
 
 - 64 GB
 - AMD Ryzen 9 5950X (*or other CPU with good single threaded performance*)

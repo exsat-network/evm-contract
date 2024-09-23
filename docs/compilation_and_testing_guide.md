@@ -10,13 +10,6 @@ Prerequisite:
       /usr/local/bin/eosio-wast2wasm
       /usr/local/bin/eosio-wasm2wast
 
-Checkout eos-evm repo:
-```
-git clone https://github.com/eosnetworkfoundation/eos-evm.git
-cd eos-evm
-git submodule update --init --recursive
-```
-
 Go into the contract folder
 ```
 cd contract
@@ -27,8 +20,8 @@ make -j
 ```
 You should now see the compile contract
 
-   eos-evm/contract/build/evm_runtime/evm_runtime.wasm
-   eos-evm/contract/build/evm_runtime/evm_runtime.abi
+   ./contract/build/evm_runtime/evm_runtime.wasm
+   ./contract/build/evm_runtime/evm_runtime.abi
 
 
 [Optional, but required for EVM token testings] to compile contract with debug actions, use
@@ -40,7 +33,7 @@ cmake ..
 <b>Note: if compilation errors occur, you may need to comment out some of the debug actions</b>
 
 
-## Compile eos-evm-node, eos-evm-rpc, unit_test
+## Compile evm-node, evm-rpc, unit_test
 Prerequisite:
 
 cmake 3.19 or later
@@ -52,9 +45,9 @@ run ./rebuild_gcc_release.sh
 
 You will get the following binaries:
 ```
-eos-evm/build/cmd/eos-evm-node
-eos-evm/build/cmd/eos-evm-rpc
-eos-evm/build/cmd/unit_test
+./build/cmd/evm-node
+./build/cmd/evm-rpc
+./build/cmd/unit_test
 ```
 
 
@@ -115,8 +108,8 @@ Create account evmevmevmevm (here private key is 5JURSKS1BrJ1TagNBw1uVSzTQL2m9eH
 ```
 Set EVM contract into account evmevmevmevm
 ```
-./cleos set code evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.wasm
-./cleos set abi evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.abi
+./cleos set code evmevmevmevm ./contract/build/evm_runtime/evm_runtime.wasm
+./cleos set abi evmevmevmevm ./contract/build/evm_runtime/evm_runtime.abi
 ```
 (Optional) Verify if account has set code, you will got the non-zero code hash which means contract is deployed, for example:
 ```
@@ -166,7 +159,7 @@ python3 ./get_balance.py 2787b98fc4e731d0456b3941f0b3fe2e01439961
 ```
 You’ll get 0 as the current balance
 
-Please find the get_balance.py from https://github.com/eosnetworkfoundation/eos-evm/tree/kayan-rpc-fix/testing-utils
+Please find the get_balance.py from ./testing-utils
 
 
 Push debug action setbal:
@@ -184,7 +177,7 @@ You should see a non-zero number. Whether or not it looks like garbage, but that
 
 <b>Step 3: send balance</b>
 
-please find send_via_cleos.py from https://github.com/eosnetworkfoundation/eos-evm/tree/kayan-rpc-fix/testing-utils
+please find send_via_cleos.py from ./testing-utils
 
 command:
 ```
@@ -214,7 +207,7 @@ assertion failure with message: validate_transaction error: 20,
 kSenderNoEOA: (looks like this means the “from” account can’t be the contract account)
 
 Other errors are defined in:
-eos-evm/silkworm/core/silkworm/consensus/validation.hpp
+./silkworm/core/silkworm/consensus/validation.hpp
 
 
 ## Playing with ethereum contract
@@ -289,7 +282,7 @@ At this moment please get back the contract address via
 
 
 
-<b>[Debug ONLY, doesn't work with eos-evm-RPC] Set EVM bytecode to EVM contract on EOSIO via debug action updatecode:</b>
+<b>[Debug ONLY, doesn't work with evm-RPC] Set EVM bytecode to EVM contract on EOSIO via debug action updatecode:</b>
 
 Caveat: according to the EVM bytecode standard, the byte code should have the following 3 parts:
 - Deploy code
@@ -365,7 +358,7 @@ Take the above solidity contract in https://remix.ethereum.org/, executing the �
 ```
 0x6057361d000000000000000000000000000000000000000000000000000000000000007b
 ```
-please find send_data_via_cleos.py from https://github.com/eosnetworkfoundation/eos-evm/tree/kayan-rpc-fix/testing-utils
+please find send_data_via_cleos.py from ./testing-utils
 
 
 To use the script: 
@@ -454,23 +447,22 @@ to get all the storages, for example:
 
 
 
-# Connect eos-evm-node with eos-evm-rpc [Experimental]
+# Connect evm-node with evm-rpc [Experimental]
 
 ## Prerequisite:
-- use branch kayan-rpc-fix of this repo (https://github.com/eosnetworkfoundation/eos-evm/tree/kayan-rpc-fix)
 - only use account 2787b98fc4e731d0456b3941f0b3fe2e01439961 (private key a3f1b69da92a0233ce29485d3049a4ace39e8d384bbc2557e3fc60940ce4e954) as genesis account (the balance was hacked)
-- Compile Leap, CDT, EOS EVM Contract, eos-evm-node, and eos-evm-rpc binaries
+- Compile Leap, CDT, EOS EVM Contract, evm-node, and evm-rpc binaries
 - Completed the above tests
 
 ## Steps
 1. From a clean database, start nodeos with SHIP
-2. clean start eos-evm-node, for example:
+2. clean start evm-node, for example:
 ```
-./build/cmd/eos-evm-node --evm-abi ./evm.abi --chain-data ./chain-data --ship-chain-state-dir ./ship-chain-data --plugin block_conversion_plugin --plugin blockchain_plugin --nocolor 1 --verbosity=5 --ship-genesis 2
+./build/cmd/evm-node --evm-abi ./evm.abi --chain-data ./chain-data --ship-chain-state-dir ./ship-chain-data --plugin block_conversion_plugin --plugin blockchain_plugin --nocolor 1 --verbosity=5 --ship-genesis 2
 ```
-3. start eos-evm-rpc in the same machine, for example:
+3. start evm-rpc in the same machine, for example:
 ```
-./build/cmd/eos-evm-rpc --eos-evm-node=127.0.0.1:8080 --chaindata=./chain-data 
+./build/cmd/evm-rpc --eos-evm-node=127.0.0.1:8080 --chaindata=./chain-data 
 ```
 
 ## Make sure RPC response:

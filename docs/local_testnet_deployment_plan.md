@@ -32,7 +32,7 @@ List of compiled system contracts from https://github.com/eosnetworkfoundation/e
 - eosio.token.wasm (optional, if you want to test token economy)
 - eosio.system.wasm (optional, if you want to test resources: RAM, NET, CPU)
 
-Compiled EVM contracts in DEBUG mode, from this repo, see https://github.com/eosnetworkfoundation/eos-evm/blob/main/docs/compilation_and_testing_guide.md for details.
+Compiled EVM contracts in DEBUG mode, from this repo, see ./compilation_and_testing_guide.md for details.
 
 The compilation result should be these two files:
 
@@ -41,8 +41,8 @@ The compilation result should be these two files:
 
 Compiled binaries from this repo:
 
-- eos-evm-node: silkworm node process that receive data from the main Antelope chain and convert to the EVM chain
-- eos-evm-rpc: silkworm rpc server that provide service for view actions and other read operations
+- evm-node: silkworm node process that receive data from the main Antelope chain and convert to the EVM chain
+- evm-rpc: silkworm rpc server that provide service for view actions and other read operations
 
 ## Run A Local Node With EOS EVM Service
 
@@ -52,8 +52,8 @@ In order to run an EOS EVM service, and thus have setup the Antelope blockchain 
 2. [Blockchain Bootstrap And Initialization](#2-blockchain-bootstrap-and-initialization)
 3. [Deploy And Initialize EVM Contract](#3-deploy-and-initialize-evm-contract)
 4. [Setup The Transaction Wrapper Service](#4-setup-the-transaction-wrapper-service)
-5. [Start eos-evm-node (a.k.a. Silkworm Node)](#5-start-eos-evm-node-aka-silkworm-node)
-6. [Start eos-evm-rpc (a.k.a. Silkworm RPC)](#6-start-eos-evm-rpc-aka-silkworm-rpc)
+5. [Start evm-node (a.k.a. Silkworm Node)](#5-start-evm-node-aka-silkworm-node)
+6. [Start evm-rpc (a.k.a. Silkworm RPC)](#6-start-evm-rpc-aka-silkworm-rpc)
 7. [Setup The Flask Proxy](#7-setup-the-flask-proxy)
 
 ### 1. Run A Local Antelope Node
@@ -353,8 +353,8 @@ Create account evmevmevmevm with key pair EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMG
 Deploy evm_runtime contract, wasm and abi file, to account evmevmevmevm:
 
 ```shell
-./cleos set code evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.wasm
-./cleos set abi evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.abi
+./cleos set code evmevmevmevm ./contract/build/evm_runtime/evm_runtime.wasm
+./cleos set abi evmevmevmevm ./contract/build/evm_runtime/evm_runtime.abi
 ```
 
 Set chain ID & native token configuration (in this example, gas price is 150 Gwei, miner_cut is 10%)
@@ -455,7 +455,7 @@ In the above environment settings, Tx Wrapper will listen to 127.0.0.1:18888, us
 
 #### Start Tx Wrapper Service
 
-Start the Tx Wrapper service and use the `index.js` from https://github.com/eosnetworkfoundation/eos-evm/tree/main/peripherals/tx_wrapper:
+Start the Tx Wrapper service and use the `index.js` from ./peripherals/tx_wrapper:
 
 ```shell
 node index.js
@@ -824,7 +824,7 @@ Verify on Antelope blockchain to ensure nonce & balance were updated:
 
 #### [Debug only] Investigate The Current EVM Storage State On Antelope
 
-Since we don't support running View actions directly from Antelope node (read requests will go to eos-evm-rpc), it is quite complicated to investigate the storage of EVM directly from Antelope. However, If you really want to do that. These are the steps:
+Since we don't support running View actions directly from Antelope node (read requests will go to evm-rpc), it is quite complicated to investigate the storage of EVM directly from Antelope. However, If you really want to do that. These are the steps:
 
 ##### Identify The "id" Field Of The Contract Address
 
@@ -867,9 +867,9 @@ Example output:
 }
 ```
 
-### 5. Start eos-evm-node (a.k.a. Silkworm Node)
+### 5. Start evm-node (a.k.a. Silkworm Node)
 
-A eos-evm-node is a node process of the virtual ethereum blockchain that validates virtual ethereum blocks and serves the read requests coming from eos-evm-rpc. It will not produce blocks. However, it will consume blocks from Antelope node and convert Antelope blocks into Virutal Ethereum blocks in a deterministic way.
+A evm-node is a node process of the virtual ethereum blockchain that validates virtual ethereum blocks and serves the read requests coming from evm-rpc. It will not produce blocks. However, it will consume blocks from Antelope node and convert Antelope blocks into Virutal Ethereum blocks in a deterministic way.
 
 To set it up, we need to first make up a genesis of the virtual ethereum blockchain that maps to the same EVM state of the evm account of the Antelope chain that just initialized in the previous steps.
 
@@ -951,7 +951,7 @@ Set the "mixHash" field to be "0x + Antelope starting block id", e.g.  "0x000000
 
 Set the "nonce" field to be the hex encoding of the value of the Antelope name of the account on which the EVM contract is deployed. So if the `evmevmevmevm` account name is used, then set the nonce to "0x56e4adc95b92b720". If the `eosio.evm` account name is used, then set the nonce to "0x5530ea015b900000".
 
-The function `convert_name_to_value` from https://github.com/eosnetworkfoundation/eos-evm/blob/main/tests/leap/antelope_name.py can be used to get the appropriate nonce value using Python:
+The function `convert_name_to_value` from ./tests/leap/antelope_name.py can be used to get the appropriate nonce value using Python:
 
 ```shell
 >>> from antelope_name import convert_name_to_value
@@ -996,27 +996,27 @@ Final EVM genesis example:
 
 #### Start The EOS EVM Process
 
-Run the below commamnd to start the eos-evm-node:
+Run the below commamnd to start the evm-node:
 
 ```shell
 mkdir ./chain-data
-./eos-evm-node --chain-data ./chain-data --plugin block_conversion_plugin --plugin blockchain_plugin --nocolor 1 --verbosity=5 --genesis-json=./genesis.json
+./evm-node --chain-data ./chain-data --plugin block_conversion_plugin --plugin blockchain_plugin --nocolor 1 --verbosity=5 --genesis-json=./genesis.json
 ```
 
-### 6. Start eos-evm-rpc (a.k.a. Silkworm RPC)
+### 6. Start evm-rpc (a.k.a. Silkworm RPC)
 
-The eos-evm-rpc process provides Ethereum compatible RPC service for clients. It queries state (including blocks, accounts, storage) from eos-evm-node, and it can also run view actions requested by clients.
+The evm-rpc process provides Ethereum compatible RPC service for clients. It queries state (including blocks, accounts, storage) from evm-node, and it can also run view actions requested by clients.
 
-#### Start The eos-evm-rpc process
+#### Start The evm-rpc process
 
-Run below commmand to start the eos-evm-node:
+Run below commmand to start the evm-node:
 
 ```shell
-./eos-evm-rpc --api-spec=eth,net --http-port=0.0.0.0:8881 --eos-evm-node=127.0.0.1:8080 --chaindata=./chain-data
+./evm-rpc --api-spec=eth,net --http-port=0.0.0.0:8881 --eos-evm-node=127.0.0.1:8080 --chaindata=./chain-data
 ```
 
-The `--chain-data` parameter value must point to the same directory of the chain-data in eos-evm-node.
-In the above command, eos-evm-rpc will listen on port 8881 for RPC requests.
+The `--chain-data` parameter value must point to the same directory of the chain-data in evm-node.
+In the above command, evm-rpc will listen on port 8881 for RPC requests.
 
 #### Verify The RPC Response
 
@@ -1077,14 +1077,14 @@ Response:
 
 #### Setup Proxy To Separate Read Requests From Write Requests
 
-The proxy program will separate Ethereum's write requests (such as eth_sendRawTransaction,eth_gasPrice) from other requests (treated as read requests). The write requests should go to Transaction Wrapper (which wrap the ETH transaction into Antelope transaction and sign it and push to the Antelope blockchain). The read requests should go to eos-evm-rpc.
+The proxy program will separate Ethereum's write requests (such as eth_sendRawTransaction,eth_gasPrice) from other requests (treated as read requests). The write requests should go to Transaction Wrapper (which wrap the ETH transaction into Antelope transaction and sign it and push to the Antelope blockchain). The read requests should go to evm-rpc.
 
 In order to get it working, docker is required. To install docker in Linux, see https://docs.docker.com/engine/install/ubuntu/
 
-You can find the proxy tool here: eos-evm/peripherals/proxy
+You can find the proxy tool here: ./peripherals/proxy
 
 ```shell
-cd eos-evm/peripherals/proxy/
+cd ./peripherals/proxy/
 ```
 
 - Edit the file `nginx.conf`, find the follow settings:
@@ -1100,7 +1100,7 @@ cd eos-evm/peripherals/proxy/
 ```
 
 - Change the IP and port of the write session to your Transaction Wrapper server endpoint.
-- Change the IP and port of the read session to your eos-evm-rpc server endpoint
+- Change the IP and port of the read session to your evm-rpc server endpoint
 - Build the docker image for the proxy program:
 
 ```shell
@@ -1143,7 +1143,7 @@ Example response:
 
 #### [Optional] Setup Metamask Chrome extension
 
-- Ensure eos-evm-rpc is running with `--api-spec=eth,debug,net,trace`
+- Ensure evm-rpc is running with `--api-spec=eth,debug,net,trace`
 - Install Metamask Plugin in Chrome
 - Click Account ICON on the top right, the Find Settings -> Networks -> Add Network
 
@@ -1166,7 +1166,7 @@ In this example, we will use the blockscout explorer (https://github.com/eosnetw
 
 Requirements:
 
-- eos-evm-rpc is running with `--api-spec=eth,debug,net,trace` parameter. This is the source the block explore will retrieve data from.
+- evm-rpc is running with `--api-spec=eth,debug,net,trace` parameter. This is the source the block explore will retrieve data from.
 - docker in Linux
 - Python3
 
@@ -1174,9 +1174,9 @@ Requirements:
 
 Setup the Flask proxy to convert the bulk requests into single requests.
 
-Since eos-evm-rpc does not support bulk requests, we need a simple proxy script to convert those requests into multiple single requests:
+Since evm-rpc does not support bulk requests, we need a simple proxy script to convert those requests into multiple single requests:
 
-This is an example proxy script "flask_proxy.py" that convert requests and forward them to the eos-evm-rpc endpoint (for example http://127.0.0.1:8881):
+This is an example proxy script "flask_proxy.py" that convert requests and forward them to the evm-rpc endpoint (for example http://127.0.0.1:8881):
 
 ```python
 #!/usr/bin/env python3
