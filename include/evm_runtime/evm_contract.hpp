@@ -88,6 +88,8 @@ public:
    [[eosio::action]] void updtgasparam(eosio::asset ram_price_mb, uint64_t gas_price);
    [[eosio::action]] void setgasparam(uint64_t gas_txnewaccount, uint64_t gas_newaccount, uint64_t gas_txcreate, uint64_t gas_codedeposit, uint64_t gas_sset);
 
+   [[eosio::action]] void setgaslimit(uint64_t ingress_gas_limit);
+
    // Events
    [[eosio::action]] void evmtx(eosio::ignore<evm_runtime::evmtx_type> event){
       eosio::check(get_sender() == get_self(), "forbidden to call");
@@ -135,7 +137,7 @@ private:
    void assert_unfrozen();
 
    silkworm::Receipt execute_tx(const runtime_config& rc, eosio::name miner, silkworm::Block& block, const transaction& tx, silkworm::ExecutionProcessor& ep);
-   void process_filtered_messages(const std::vector<silkworm::FilteredMessage>& filtered_messages);
+   void process_filtered_messages(std::function<bool(const silkworm::FilteredMessage&)> extra_filter, const std::vector<silkworm::FilteredMessage>& filtered_messages);
 
    uint64_t get_and_increment_nonce(const name owner);
 
@@ -150,6 +152,9 @@ private:
 
    void process_tx(const runtime_config& rc, eosio::name miner, const transaction& tx, std::optional<uint64_t> min_inclusion_price);
    void dispatch_tx(const runtime_config& rc, const transaction& tx);
+
+   struct statistics get_statistics() const;
+   void set_statistics(const struct statistics &v);
 };
 
 } // namespace evm_runtime
