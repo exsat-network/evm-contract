@@ -26,8 +26,12 @@ if (WITH_ADMIN_ACTIONS)
     list(APPEND SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/admin_actions.cpp)
 endif()
 
+if (WITH_SOFT_FORKS)
+    add_compile_definitions(WITH_SOFT_FORKS)
+endif()
+
 add_compile_definitions(ANTELOPE)
-add_compile_definitions(PROJECT_VERSION="1.0.0")
+add_compile_definitions(PROJECT_VERSION="1.0.1")
 
 # ethash
 list(APPEND SOURCES 
@@ -92,5 +96,5 @@ target_compile_options(evm_runtime PUBLIC --no-missing-ricardian-clause)
 if (WITH_LARGE_STACK)
     target_link_options(evm_runtime PUBLIC --stack-size=50000000)
 else()
-    target_link_options(evm_runtime PUBLIC --stack-size=37328)
+    target_link_options(evm_runtime PUBLIC --stack-size=35984)
 endif()
