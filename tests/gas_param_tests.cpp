@@ -488,12 +488,12 @@ BOOST_FIXTURE_TEST_CASE(gas_limit_internal_transaction, gas_param_evm_tester) tr
     produce_block();
     produce_block();
 
-    // Send 0.0001 EOS to a never used address (21000 GAS)
+    // Send 0.1 EOS to a never used address (21000 GAS)
     evm_eoa evm1;
-    auto trace = transfer_token("alice"_n, "evm"_n, make_asset(1), evm1.address_0x());
+    auto trace = transfer_token("alice"_n, "evm"_n, make_asset(1000), evm1.address_0x());
     auto tx = get_tx_from_trace(trace->action_traces[3].act.data);
     BOOST_REQUIRE(tx.gas_limit == 21000);
-    BOOST_REQUIRE(evm_balance(evm1) == 100000000000000);
+    BOOST_REQUIRE(evm_balance(evm1) == 100000000000000000);
 
     // Set gas_txnewaccount = 1
     setgasparam(1, gas_newaccount, gas_txcreate, gas_codedeposit, gas_sset, evm_account_name);
@@ -501,12 +501,12 @@ BOOST_FIXTURE_TEST_CASE(gas_limit_internal_transaction, gas_param_evm_tester) tr
     produce_block();
     produce_block();
 
-    // Send 0.0001 EOS to a never used address (21001 GAS)
+    // Send 0.1 EOS to a never used address (21001 GAS)
     evm_eoa evm2;
-    trace = transfer_token("alice"_n, "evm"_n, make_asset(1), evm2.address_0x());
+    trace = transfer_token("alice"_n, "evm"_n, make_asset(1000), evm2.address_0x());
     tx = get_tx_from_trace(trace->action_traces[4].act.data);
     BOOST_REQUIRE(tx.gas_limit == 21001);
-    BOOST_REQUIRE(evm_balance(evm2) == 100000000000000);
+    BOOST_REQUIRE(evm_balance(evm2) == 100000000000000000);
 
 } FC_LOG_AND_RETHROW()
 

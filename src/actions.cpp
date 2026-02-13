@@ -741,7 +741,7 @@ void evm_contract::handle_evm_transfer(eosio::asset quantity, const std::string&
 
     //subtract off the ingress bridge fee from the quantity that will be bridged
     quantity -= _config->get_ingress_bridge_fee();
-    eosio::check(quantity.amount > 0, "must bridge more than ingress bridge fee");
+    eosio::check(quantity.amount >= 100, "must bridge more than ingress bridge fee plus 0.1");
 
     // Statistics
     auto s = get_statistics();

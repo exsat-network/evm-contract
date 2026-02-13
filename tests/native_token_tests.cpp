@@ -277,14 +277,14 @@ BOOST_FIXTURE_TEST_CASE(basic_eos_evm_bridge, native_token_evm_tester_EOS) try {
    {
       const int64_t to_bridge = 900;
       BOOST_REQUIRE_EXCEPTION(transfer_token("alice"_n, "evm"_n, make_asset(to_bridge), evm1.address_0x()),
-                              eosio_assert_message_exception, eosio_assert_message_is("must bridge more than ingress bridge fee"));
+                              eosio_assert_message_exception, eosio_assert_message_is("must bridge more than ingress bridge fee plus 0.1"));
    }
 
    //transferring exact amount of bridge fee isn't allowed
    {
       const int64_t to_bridge = 1000;
       BOOST_REQUIRE_EXCEPTION(transfer_token("alice"_n, "evm"_n, make_asset(to_bridge), evm1.address_0x()),
-                              eosio_assert_message_exception, eosio_assert_message_is("must bridge more than ingress bridge fee"));
+                              eosio_assert_message_exception, eosio_assert_message_is("must bridge more than ingress bridge fee plus 0.1"));
    }
 
    BOOST_REQUIRE(expected_inevm == inevm());
