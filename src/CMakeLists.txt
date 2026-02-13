@@ -93,8 +93,14 @@ target_include_directories( evm_runtime PUBLIC
 
 target_compile_options(evm_runtime PUBLIC --no-missing-ricardian-clause)
 
-if (WITH_LARGE_STACK)
+if (WITH_LARGE_STACK) 
+    # Limit for tests.
     target_link_options(evm_runtime PUBLIC --stack-size=50000000)
-else()
+elseif (WITH_LOW_STACK)
+    # Limit for Vaulta Networks with "default" memory settings.
     target_link_options(evm_runtime PUBLIC --stack-size=35984)
+else()
+    # Limit for Vaulta Networks with "high" memory settings. 
+    # It should be the default value for future deployments as the Vaulta Mainnet setting has been updated.
+    target_link_options(evm_runtime PUBLIC --stack-size=819200)
 endif()
