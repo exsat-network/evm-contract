@@ -306,9 +306,9 @@ BOOST_FIXTURE_TEST_CASE(addevmbal_subtract_tests, admin_action_tester) try {
    BOOST_REQUIRE_EXCEPTION(addevmbal(evm1_account.id, b100_plus_one, true),
          eosio_assert_message_exception, eosio_assert_message_is("decrementing more than available"));
 
-   // Fund evm2 address with 0.0001 EOS
+   // Fund evm2 address with 0.1 EOS
    evm_eoa evm2;
-   const int64_t to_bridge2 = 1;
+   const int64_t to_bridge2 = 1000;
    transfer_token("alice"_n, evm_account_name, make_asset(to_bridge2), evm2.address_0x());
    auto evm2_account = find_account_by_address(evm2.address).value();
 
